@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?> 
+<project name="ogam-builder" default="+dist-all" basedir=".">
+	<description>
+		Contains target for :
+		* dist 		: Build and make a jar for the deployer project.
+		  The resulted jars and required libs are bundled into a zip file 
+		  located into the "dist" foler. This zip file can be extracted and used
+		  as it to launch the application form the jar.
+		* dist-all 	: Build and make a jar for the deployer project and all 
+		  "projects" that can be used with the depoyer. Each "projects" have to 
+		  be located into the "src/projects" dir and will live in a root package 
+		  who has the name of the project. To add a project, update the 
+		  "dist-projects" target while copying and pasting the "distproject" 
+		  task.	
+	</description>		
+	
+	<target name="dist-projects" depends="+dist">
+		<!-- Copy, paste this task and change the "project" attribute -->
+		<!--<distproject project="demo" />-->
+	</target>
+				
+	<target name="+compile" depends="-init" description="This target use some properties
+			[Property1:The first property][PropertyX:Another property]">		
+		<mkdir dir=".build/main/classes"/>
+		<javac	srcdir="src/main/java" destdir=".build/main/classes"
+				includeantruntime="false" debug="on" optimize="on" >
+			<compilerarg value="-Xlint"/>
+			<classpath>
+				<fileset dir="lib/main" includes="**/*.jar" />
+			</classpath>
+		</javac>	
+	</target>
+				
+	<target name="+dist" depends="+compile">
+		<mkdir dir=".build/main/jar/lib" />
+		
+		<copy todir=".build/main/jar/lib">
+			<fileset dir="lib/main" includes="*.jar" />
+		</copy>
+		
+		<path id="classpath">
+			<fileset dir=".build/main/jar/lib" includes="*.jar" />
+		</path>		
+		<manifestclasspath property="jar.classpath" jarfile=".build/main/jar/ogam-builder.jar">
+			<classpath refid="classpath" />
+		</manifestclasspath>
+		
+		<tempfile property="manifest" destdir=".build/main/jar" suffix=".tmp" prefix="MANIFEST_"/>
+		<manifest file="${manifest}">
+			<attribute name="Main-Class" value="be.gervaisb.ogam.deployer.Launcher"/>
+			<attribute name="Built-By" value="${user.name}"/>
+			<attribute name="Class-Path" value="${jar.classpath}" />
+		</manifest>
+					
+		<jar 	destfile=".build/main/jar/ogam-builder.jar" 
+				basedir=".build/main/classes" 
+				manifest="${manifest}">
+			<fileset dir="src/main/resources" />
+		</jar>
+		<zip destfile="dist/ogam-builder_standalone.zip"
+			 basedir=".build/main/jar" />
+		
+		<delete file="${manifest}" />
+	</target>
+		
+	<target name="+dist-all" depends="+dist, dist-projects"
+		description="[AProperty:This property name is overloade from views.xml]">
+		<mkdir dir=".build/all/lib" />		
+		<copy todir=".build/all/lib">
+			<fileset dir="lib/main" includes="*.jar" />
+			<fileset dir="lib/projects" includes="*/*.jar" />
+		</copy>		
+		
+		<mkdir dir=".build/all/projects" />
+		<copy todir=".build/all/projects">
+			<fileset dir=".build/projects/jar" includes="*.jar" />
+		</copy>	
+		
+		<mkdir dir=".build/all" />
+		<path id="classpath.all">
+			<fileset dir=".build/all/projects" includes="**/*.jar" />
+			<fileset dir=".build/all/lib" includes="**/*.jar" />
+		</path>		
+		<manifestclasspath property="jar.classpath.all" jarfile=".build/all/ogam-builder.jar">
+			<classpath refid="classpath.all" />
+		</manifestclasspath>
+				
+		<tempfile property="manifest.all" destdir=".build/all" suffix=".tmp" prefix="MANIFEST_"/>
+		<manifest file="${manifest.all}">
+			<attribute name="Main-Class" value="be.gervaisb.ogam.deployer.Launcher"/>
+			<attribute name="Built-By" value="${user.name}"/>
+			<attribute name="Class-Path" value="${jar.classpath.all}" />
+		</manifest>
+							
+		<jar 	destfile=".build/all/ogam-builder.jar" 
+				basedir=".build/main/classes" 
+				manifest="${manifest.all}">
+				<fileset dir="src/main/resources" />
+				<fileset dir="src/main/java" includes="**/*.png" />
+				<fileset dir="src/main/java" includes="**/*.png" />
+		</jar>
+		<delete file="${manifest.all}" />
+		
+		<zip destfile="dist/ogam-builder_all.zip"
+			 basedir=".build/all" excludes="${manifest.all}">
+		</zip>
+	</target>	
+		
+	<target name="-clean" >
+		<delete dir=".build" includeemptydirs="no" failonerror="no" />
+	</target>
+	
+	<target name="-init" depends="-clean">		
+		<mkdir dir=".build" />
+		<mkdir dir="dist" />	
+	</target>
+		
+
+</project>

@@ -1,0 +1,39 @@
+/* 
+ * This work is licensed under the Creative Commons Attribution-NonCommercial-
+ * NoDerivs 3.0 Unported License. To view a copy of this license, visit http://
+ * creativecommons.org/licenses/by-nc-nd/3.0/ or send a letter to Creative 
+ * Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, 
+ * USA.*/
+package be.gervaisb.antui.core.impls.remote;
+
+import be.gervaisb.antui.core.Target;
+import be.gervaisb.antui.core.Utils;
+
+public class RemoteTarget implements Target {
+	
+	private String id;
+	private String name;
+	private String description;	
+	
+	public RemoteTarget(final Target decorated) {
+		this.id = decorated.getId();
+		this.name = Utils.formatTargetName(decorated.getName());
+		this.description = decorated.getDescription();
+	}
+
+	@Override
+	public String getId() {
+		return id;
+	}
+	
+	@Override
+	public String getName() {
+		return name;
+	}
+	
+	@Override
+	public String getDescription() {
+		return description;
+	}
+		
+}

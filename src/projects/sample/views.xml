@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<project basepackage="sample.views">
+	<view task="+compile" name="CompileView"  />
+	
+	<view task="+dist-all">
+		<labels>
+			<label key="AProperty" value="Renamed" />
+		</labels>
+	</view>
+	
+</project>

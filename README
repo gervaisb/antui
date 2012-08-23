@@ -1,0 +1,46 @@
+
+	Previously "ogam-deployer". This project bring an user interface to execute 
+	Ant tasks.
+	The project was originally created for a job where we were packaging 
+	versions at hand and releasing them with an ugly, bugged and unmaintenable 
+	tool where each tasks has to be written from scratch.
+
+	Note : The "ogam" name don't refer to this old job.
+	
+	* Usage : 
+	Create a folder and add it to the classpath. Create "tasks.xml" file who 
+	contains Ant targets, execute the app with the folder name as argument.
+	When the application start she parse the "tasks.xml" file and collect all 
+	targets who have a name that start with "+" and add them to the view.
+	
+	* User inputs :
+	If a target need some properties, add a the "description" attribute to the 
+	target and, for each property, add a line between squared brackets with the
+	property name and description separated with ":".
+	<target name="+Target" description="This target use some properties
+		[Property1:The first property][PropertyX:Another property]">
+	A default view is automatically create with textfields who allow user to 
+	give property values.
+		
+	* Custom labels :
+	Properties who are displayed in views can be renamed trough a "views.xml" 
+	file. This file must contains a <view> tag with a "task" attribute that has 
+	the same value as the one in the "tasks.xml".
+	Inside this node, add a <labels> child which contains some <label> childrens 
+	with the property name as "key" attribute and the value in a "value" 
+	attribute.
+	 
+	* Custom views :
+	You can customize views trough a "views.xml" file. This let you create more 
+	complex views with advanced components. 
+	These views have an abstract method "getProperties" who is called when the 
+	task is executed. If the returned value is Null, the execution is cancelled.
+	These views are declared inside the "views.xml" file :
+	<project basepackage="base_location_of_your_views">
+		<view task="ant task id as he is in your tasks.xml"
+			  name="Custom view class name (inside the base package)" />
+	</project>
+	
+	
+	A sample project lives into the "src/projects" folder.
+	
